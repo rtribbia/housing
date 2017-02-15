@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+	function rentSort(a, b) {
+		  if (a.rent < b.rent) {
+		    return -1;
+		  }
+		  if (a.rent > b.rent) {
+		    return 1;
+		  }
+		  return 0;
+		}
+
+	function dispResults(result){
+    	var table = document.createElement('table');
+    	var thead = document.createElement('thead');
+    	var tbody = document.createElement('tbody');
+    	var tra = document.createElement('tr');
+
+    	tra.innerHTML = 'image';
+    	thead.append(tra);
+
+    	table.append(thead);
+    	table.append(tbody);
+    	result.sort(rentSort);
+        result.forEach(function(res) {
+
+        	var tr = document.createElement('tr');
+        	//IMG
+        	var td_img = document.createElement('td');
+        	var img = document.createElement('img');
+        	img.setAttribute('src',res.pic);
+        	img.setAttribute('width','200');
+        	td_img.append(img);
+        	tr.append(td_img);
+
+        	//Price / config
+        	var td_price = document.createElement('td');
+        	var price = document.createElement('h3');
+        	price.innerHTML = '$' + res.rent;
+        	td_price.append(price);
+
+        	var bedba = document.createElement('h3');
+        	bedba.innerHTML = res.bedbath;
+        	td_price.append(bedba);
+
+			var sqft = document.createElement('h3');
+        	sqft.innerHTML = res.sqft + ' sq ft';
+        	td_price.append(sqft);
+
+        	tr.append(td_price);
+
+        	//TITLE link
+        	var td_title = document.createElement('td');
+        	var a = document.createElement('a');
+        	var href = res.site.replace('/listings/listings',res.link);
+        	a.setAttribute('href',href);
+        	a.setAttribute('target','_blank');
+        	a.innerHTML = res.address;
+
+        	var title = document.createElement('h2');
+        	title.innerHTML = res.title;
+
+        	var p = document.createElement('p');
+        	p.innerHTML = res.availability || 'availability unknown';
+
+        	td_title.append(title);
+        	td_title.append(a);
+        	td_title.append(p);
+        	tr.append(td_title);
+
+
+        	tbody.append(tr);
+        });
+        document.getElementById('div1').innerHTML = "";
+        document.getElementById('div1').append(table);
+    }
+
+
+    $("#appfolioBtn").click(function(){
+        $.ajax({url: "/appfolio", success: dispResults});
+    });
+
+    $("#craigslistBtn").click(function(){
+        $.ajax({url: "/craigslist", success: dispResults});
+    });
+});
+</script>
+</head>
+<body>
+
+
+
+<button id="appfolioBtn">Get appfiolio results</button>
+<button id="craigslistBtn">Get craigslist results</button>
+
+<div id="div1"></div>
+
+</body>
+</html>
