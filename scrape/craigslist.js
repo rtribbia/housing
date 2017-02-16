@@ -1,44 +1,85 @@
 var request = require('request');
 var cheerio = require('cheerio');
 
-var craigslist = function(query) {
-	this.results = []; 
-	this.query = query; 
-	this.coords = [];
+
+var results = [];
+var coords = [];
+
+//requests for both JSON and HTML are async, so these booleans are used to keep track of status.
+var HTMLcomplete = false;
+var JSONcomplete = false;
+
+function log(msg) {
+	console.log(msg);
 }
 
+var craigslist = function(query) {
+	this.query = query; 
+}
 
+function getJSONdata(id) {
+	var json = {lat: 0, long: 0, pic: ""};
 
-function createCoordDict(query,dict,offset) {
+	for (var i = 0; i < coords.length; i++) {
+
+		var str = coords[i].PostingID.toString();
+
+		if (str.indexOf(id) > -1) {
+			json.lat = coords[i].Latitude;
+			json.long = coords[i].Longitude;
+			json.pic = coords[i].ImageThumb ? coords[i].ImageThumb : "";
+			break;
+		}
+
+	}
+
+	return json;
+}
+
+function pairResults() {
+	//async scrape of HTML and JSON done?
+	if (HTMLcomplete && JSONcomplete)  {
+		log(results.length + ' HTML craigslist results scraped');
+		log(coords.length + ' JSON craigslist results scraped');
+
+		results.forEach(function(result) {
+			var id = result.link.split('/')[5].replace('.html','');
+			var json = getJSONdata(id);
+			
+			result.lat = json.lat;
+			result.long = json.long;
+			result.pic = json.pic;
+		});
+	}
+}
+
+function scrapeJSON(query,offset) {
 
 	var url = query + ((!offset) ? '' : ('&s=' + offset))
-	console.log('query: ' + url);
-	console.log('offset: ' + offset + '\n');
+
+	//convert provided HTML query copied from browser, to query returning json
+	url = url.replace('/search/','/jsonsearch/');
 
 	request(url, function(error, response, body){
 		var parsed = JSON.parse(body);
 		parsed[0].forEach(function(e){
-			dict.push(e);
+			coords.push(e);
 		});
 
 		var resultsLen = parsed[0].length;
-		console.log('checking len: ' + resultsLen);
 
 		if ((resultsLen > offset) || (!offset) || (resultsLen == offset)) {
-			createCoordDict(query,dict,resultsLen);
+			scrapeJSON(query,resultsLen);
 		} else {
-			console.log('Craiglist coord created: ' + dict.length);
+			JSONcomplete = true;
+			pairResults();
 		}
 	});
 }
 
-
-craigslist.prototype.scrape = function() {
-	createCoordDict(this.query, this.coords);
-
-	var results = this.results;
-
-	request(this.query, function(error, response, html){
+function scrapeHTML(query,offset){
+	
+	request(query, function(error, response, html){
 
 	    if(!error) {
       		var $ = cheerio.load(html);
@@ -84,13 +125,30 @@ craigslist.prototype.scrape = function() {
 		        results.push(result);
       		});
 
+      		HTMLcomplete = true;
+      		pairResults();
+
 	    }
 	});
+
 }
 
-//expose results array
+
+craigslist.prototype.scrape = function() {
+
+	scrapeJSON(this.query);
+	scrapeHTML(this.query);
+
+}
+
+//expose HTML array
 craigslist.prototype.getResults = function() {
-	return this.results;
+	return results;
+}
+
+//espose JSON array
+craigslist.prototype.getJSON = function() {
+	return coords;
 }
 
 
