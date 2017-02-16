@@ -1,10 +1,40 @@
 var request = require('request');
 var cheerio = require('cheerio');
 
-var craigslist = function(query) {this.results = []; this.query = query; }
+var craigslist = function(query) {
+	this.results = []; 
+	this.query = query; 
+	this.coords = [];
+}
 
-//main scrape method
+
+
+function createCoordDict(query,dict,offset) {
+
+	var url = query + ((!offset) ? '' : ('&s=' + offset))
+	console.log('query: ' + url);
+	console.log('offset: ' + offset + '\n');
+
+	request(url, function(error, response, body){
+		var parsed = JSON.parse(body);
+		parsed[0].forEach(function(e){
+			dict.push(e);
+		});
+
+		var resultsLen = parsed[0].length;
+		console.log('checking len: ' + resultsLen);
+
+		if ((resultsLen > offset) || (!offset) || (resultsLen == offset)) {
+			createCoordDict(query,dict,resultsLen);
+		} else {
+			console.log('Craiglist coord created: ' + dict.length);
+		}
+	});
+}
+
+
 craigslist.prototype.scrape = function() {
+	createCoordDict(this.query, this.coords);
 
 	var results = this.results;
 
