@@ -48,7 +48,16 @@ function pairResults() {
 			
 			result.lat = json.lat;
 			result.long = json.long;
-			result.pic = json.pic;
+					
+			if (json.pic.length > 0) {
+				var images = [];
+				var imgArr = json.pic.replace('https://images.craigslist.org/','').split(',');
+				imgArr.forEach(function(imgid) {
+					var imgUrl = "https://images.craigslist.org/" + imgid.replace('1:','').replace('_50x50c.jpg','') + '_600x450.jpg';
+					images.push(imgUrl);
+				});
+				result.pic = images;
+			}
 		});
 	}
 }
