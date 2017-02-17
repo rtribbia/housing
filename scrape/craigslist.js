@@ -64,7 +64,7 @@ function pairResults() {
 
 function scrapeJSON(query,offset) {
 
-	var url = query + ((!offset) ? '' : ('&s=' + offset))
+	var url = query + ((!offset) ? '' : ('&s=' + offset));
 
 	//convert provided HTML query copied from browser, to query returning json
 	url = url.replace('/search/','/jsonsearch/');
@@ -87,11 +87,13 @@ function scrapeJSON(query,offset) {
 }
 
 function scrapeHTML(query,offset){
-	
-	request(query, function(error, response, html){
 
+	var url = query + ((!offset) ? '' : ('&s=' + offset));
+	request(url, function(error, response, html){
 	    if(!error) {
+
       		var $ = cheerio.load(html);
+      		var resultsLen = $('.result-row').length;
 
       		$('.result-row').each(function(i, element){
       			var pic = "";
@@ -134,9 +136,12 @@ function scrapeHTML(query,offset){
 		        results.push(result);
       		});
 
-      		HTMLcomplete = true;
-      		pairResults();
-
+			if ((resultsLen > offset) || (!offset) || (resultsLen == offset)) {
+				scrapeHTML(query,resultsLen);
+			} else {
+				HTMLcomplete = true;
+				pairResults();
+			}
 	    }
 	});
 

@@ -1,9 +1,68 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <style>
+       #map {
+        height: 600px;
+        width: 100%;
+        margin-bottom: 15px;
+        border: 2px solid;
+       }
+    .info-window {
+        width: 400px;
+        height: 150px;
+        font-family: Arial;
+        }
+
+    .info-img {
+        width: 100px;
+        height: auto;
+        vertical-align: middle;
+        margin-top: 15px;
+    }
+
+    .info-div-left {
+        width: 100px;
+        height: 100%;
+        display: inline-block;
+        vertical-align: top;
+    }
+
+    .info-div-right {
+        width: 290px;
+        height: 100%;
+        display: inline-block;
+        vertical-align: top;
+    }
+
+    .info-rent {
+        text-align: center;
+        font-weight: bolder;
+        font-size:1.1em;
+        margin: 2px;
+    }
+    .info-size {
+        text-align: center;
+        font-weight: bolder;
+        margin: 2px;
+    }
+    .info-address {
+        margin-top: 10px;
+    }
+
+    .info-availability {
+        text-align: center;
+        margin-top: 10px;
+        font-weight: bolder;
+        color: #AA0000;
+    }
+    </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script>
 $(document).ready(function(){
+
+    var markers = [];
+
 	function rentSort(a, b) {
 		  if (a.rent < b.rent) {
 		    return -1;
@@ -13,8 +72,70 @@ $(document).ready(function(){
 		  }
 		  return 0;
 		}
+    
+    function deleteMarkers() {
+        for (var i = 0; i < markers.length; i++) {
+          markers[i][0].setMap(null);
+        }
+        markers = [];
+    }
+    function createMarker(res) {
+
+        if (res.lat) {
+            var pos = {lat: res.lat, lng: res.long};
+            var label = "";
+
+            if (res.rent != null)
+                label = res.rent.toString();
+
+            var marker = new google.maps.Marker({
+              position: pos,
+              map: map,
+              title: res.title,
+              label: label
+            });
+
+            var infoContent = '<div class="info-window"><div class="info-div-left">'
+
+            if (res.pic && res.pic[0].length) {
+                infoContent += '<img src="' + res.pic[0] + '" class="info-img"></img>';
+            } else {
+                infoContent += '<img src="notfound.jpg" class="info-img"></img>';
+            }
+            
+            infoContent += '</div><div class="info-div-right">'
+            infoContent += '<p class="info-rent"><strong>$' + res.rent + ' - ' + res.bed + ' bed ' + (res.bath ? (res.bath + ' bath') : '') + '</strong></p>';
+            infoContent += '<p class="info-size">' + res.sqft + 'sq ft</p>';
+            infoContent += '<p class="info-address">' + res.address + '</p>';
+            infoContent += '<p class="info-availability">' + res.availability + '</p></div>'
+
+
+            var infowindow = new google.maps.InfoWindow({
+                content: infoContent
+            });
+
+            marker.addListener('click', function() {
+                 if (res.link.length) {
+                    window.open(res.link);
+                 }
+            });
+
+            marker.addListener('mouseover', function() {
+                 infowindow.open(map, marker);
+            });
+            marker.addListener('mouseout', function() {
+                 infowindow.close(map, marker);
+            });
+
+            markers.push([marker,infowindow]);
+        }
+    }
+
 
 	function dispResults(result){
+        deleteMarkers();
+        document.getElementById('div1').innerHTML = "";
+
     	var table = document.createElement('table');
     	var thead = document.createElement('thead');
     	var tbody = document.createElement('tbody');
@@ -28,23 +149,31 @@ $(document).ready(function(){
     	result.sort(rentSort);
         result.forEach(function(res) {
 
+            //create google map marker
+            createMarker(res);
+
         	var tr = document.createElement('tr');
         	//IMG
         	var td_img = document.createElement('td');
         	var img = document.createElement('img');
-        	img.setAttribute('src',res.pic);
+
+            var src = "notfound.jpg";
+            if (res.pic && res.pic[0].length)
+                src = res.pic[0];
+        	img.setAttribute('src',src);
         	img.setAttribute('width','200');
         	td_img.append(img);
         	tr.append(td_img);
 
         	//Price / config
         	var td_price = document.createElement('td');
+            td_price.setAttribute('style','width: 100px;');
         	var price = document.createElement('h3');
         	price.innerHTML = '$' + res.rent;
         	td_price.append(price);
 
         	var bedba = document.createElement('h3');
-        	bedba.innerHTML = res.bedbath;
+        	bedba.innerHTML = res.bed + ' bed' + (res.bath ? (' ' + res.bath + ' bath') : '');
         	td_price.append(bedba);
 
 			var sqft = document.createElement('h3');
@@ -55,11 +184,14 @@ $(document).ready(function(){
 
         	//TITLE link
         	var td_title = document.createElement('td');
+            var p_address = document.createElement('p');
+            p_address.innerHTML = res.address;
+
         	var a = document.createElement('a');
-        	var href = res.site.replace('/listings/listings',res.link);
+        	var href = res.link;
         	a.setAttribute('href',href);
         	a.setAttribute('target','_blank');
-        	a.innerHTML = res.address;
+        	a.innerHTML = "VIEW POSTING";
 
         	var title = document.createElement('h2');
         	title.innerHTML = res.title;
@@ -68,6 +200,7 @@ $(document).ready(function(){
         	p.innerHTML = res.availability || 'availability unknown';
 
         	td_title.append(title);
+            td_title.append(p_address);
         	td_title.append(a);
         	td_title.append(p);
         	tr.append(td_title);
@@ -75,7 +208,7 @@ $(document).ready(function(){
 
         	tbody.append(tr);
         });
-        document.getElementById('div1').innerHTML = "";
+        
         document.getElementById('div1').append(table);
     }
 
@@ -92,7 +225,24 @@ $(document).ready(function(){
 </head>
 <body>
 
-
+ <div id="map"></div>
+    <script>
+    var map;
+      function initMap() {
+        var pdx = {lat: 45.5275364, lng: -122.6707299};
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 11,
+          center: pdx
+        });
+        // var marker = new google.maps.Marker({
+        //   position: pdx,
+        //   map: map
+        // });
+      }
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap">
+    </script>
 
 <button id="appfolioBtn">Get appfiolio results</button>
 <button id="craigslistBtn">Get craigslist results</button>

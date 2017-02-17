@@ -46,7 +46,7 @@ appfolio.prototype.scrape = function() {
 			    //Parse each div.result
 			    $('.result').each(function(i, element){
 			    	var locs = {lat: 0, long: 0};
-			    	var pic = $('.js-listing-image',this).attr('data-original');
+			    	var pic = [$('.js-listing-image',this).attr('data-original')];
 			    	var body = $(this).children().eq(1);
 			        var link = $('.js-hand-hidden-link-to-detail',this).attr('href');
 			        var title = $('.js-listing-title',this).text()
@@ -85,8 +85,9 @@ appfolio.prototype.scrape = function() {
 			        	long: locs.long
 			        };
 
-
-			        results.push(result);
+			        if (result.rent > 700) {
+			       		results.push(result);
+			        }
 			    });
 
 			}
