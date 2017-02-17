@@ -3,3 +3,4 @@ jspm_packages/
 output.json
 public/template.html
 .apikey
+.sites
