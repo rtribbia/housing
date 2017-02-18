@@ -144,6 +144,7 @@ $(document).ready(function(){
     	tra.innerHTML = 'image';
     	thead.append(tra);
 
+        table.setAttribute('style','max-width: 100%;');
     	table.append(thead);
     	table.append(tbody);
     	result.sort(rentSort);
@@ -206,6 +207,7 @@ $(document).ready(function(){
         	tr.append(td_title);
 
 
+
         	tbody.append(tr);
         });
         
@@ -219,6 +221,10 @@ $(document).ready(function(){
 
     $("#craigslistBtn").click(function(){
         $.ajax({url: "/craigslist", success: dispResults});
+    });
+
+    $("#capBtn").click(function(){
+        $.ajax({url: "/cap", success: dispResults});
     });
 });
 </script>
@@ -246,6 +252,7 @@ $(document).ready(function(){
 
 <button id="appfolioBtn">Get appfiolio results</button>
 <button id="craigslistBtn">Get craigslist results</button>
+<button id="capBtn">Get Capital results</button>
 
 <div id="div1"></div>
 
