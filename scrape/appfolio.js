@@ -93,7 +93,8 @@ appfolio.prototype.scrape = function() {
 			}
 
 	        if (outstandingRequests == 0) {	
-	       		console.log(urls.length + ' appfolio sites scraped');
+	       		console.log(urls.length + ' Appfolio sites scraped.');
+	       		console.log(results.length + ' Appfolio listings found.');
 	   		}
 		});
 	});

@@ -73,13 +73,14 @@ function scrapeListings(urls) {
 	        };
 
 	        results.push(result);
-
+			if (outstandingRequests == 0) {
+				console.log(results.length + ' Capital Property Mgmt listings found.');
+			}
 
 		});
 
-		if (outstandingRequests == 0) {
-			console.log('all done!');
-		}
+
+
 	}); 
 
 }

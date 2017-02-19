@@ -134,7 +134,7 @@ $(document).ready(function(){
 
 	function dispResults(result){
         deleteMarkers();
-        document.getElementById('div1').innerHTML = "";
+        document.getElementById('resultsTable').innerHTML = "";
 
     	var table = document.createElement('table');
     	var thead = document.createElement('thead');
@@ -211,9 +211,11 @@ $(document).ready(function(){
         	tbody.append(tr);
         });
         
-        document.getElementById('div1').append(table);
+        document.getElementById('resultsTable').append(table);
     }
-
+    $("#allBtn").click(function(){
+        $.ajax({url: "/all", success: dispResults});
+    });
 
     $("#appfolioBtn").click(function(){
         $.ajax({url: "/appfolio", success: dispResults});
@@ -226,6 +228,10 @@ $(document).ready(function(){
     $("#capBtn").click(function(){
         $.ajax({url: "/cap", success: dispResults});
     });
+
+    $("#princeBtn").click(function(){
+        $.ajax({url: "/princeton", success: dispResults});
+    });    
 });
 </script>
 </head>
@@ -250,11 +256,13 @@ $(document).ready(function(){
     src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap">
     </script>
 
+<button id="allBtn">Get ALL results</button>
 <button id="appfolioBtn">Get appfiolio results</button>
 <button id="craigslistBtn">Get craigslist results</button>
 <button id="capBtn">Get Capital results</button>
+<button id="princeBtn">Get Princeton results</button>
 
-<div id="div1"></div>
+<div id="resultsTable"></div>
 
 </body>
 </html>

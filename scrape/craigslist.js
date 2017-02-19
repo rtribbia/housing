@@ -39,8 +39,7 @@ function getJSONdata(id) {
 function pairResults() {
 	//async scrape of HTML and JSON done?
 	if (HTMLcomplete && JSONcomplete)  {
-		log(results.length + ' HTML craigslist results scraped');
-		log(coords.length + ' JSON craigslist results scraped');
+		log(results.length + ' Craigslist listings found.');
 
 		results.forEach(function(result) {
 			var id = result.link.split('/')[5].replace('.html','');
