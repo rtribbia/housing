@@ -1,0 +1,45 @@
+<sebm-google-map [latitude]="lat" [longitude]="lng" [zoom]="11">
+  <sebm-google-map-marker *ngFor="let listing of listings | rent:minRentFilter:maxRentFilter:addressFilter" [latitude]="listing.lat" [longitude]="listing.long" [label]="listing.rent.toString()" >
+       <sebm-google-map-info-window [disableAutoPan]="true">
+            <div class="info-window">
+               <div class="info-div-left">
+                  <img *ngIf="listing.pic" [attr.src]="listing.pic" class="info-img">
+               </div>
+               <div class="info-div-right">
+                  <p class="info-rent">
+                     <strong>$ {{listing.rent}} - {{listing.bed}} bed / {{listing.bath}} bath</strong>
+                  </p>
+                  <p class="info-size">{{listing.sqft}} sq ft</p>
+                  <p class="info-address">{{listing.address}}</p>
+                  <p class="info-availability">{{listing.availability}}</p>
+                  <button md-raised-button color="primary" (click)="goToListing(listing)">view listing</button>
+               </div>
+            </div>
+       </sebm-google-map-info-window>
+  </sebm-google-map-marker>
+</sebm-google-map>
+<div id="filter">
+<table style="width: 100%" cellspacing="0">
+<tr>
+   <td><md-input maxlength="5" placeholder="Min. Rent" [(ngModel)]="minRentFilter"></md-input></td>
+   <td><md-input maxlength="5" placeholder="Max. Rent" [(ngModel)]="maxRentFilter"></md-input></td>
+   <td rowspan="2"><md-input #address placeholder="Address" [(ngModel)]="addressFilter"></md-input></td>
+</tr>
+<tr>
+   <td><input type="range" min="0" max="5000" [(ngModel)]="minRentFilter" /></td>
+   <td><input type="range" min="0" max="5000" [(ngModel)]="maxRentFilter" /></td>
+</tr>
+</table>
+</div>
+<h1>{{(listings | rent:minRentFilter:maxRentFilter:addressFilter).length}} listings found</h1>
+<md-card *ngFor="let listing of listings | rent:minRentFilter:maxRentFilter:addressFilter"  style="margin-bottom: 10px;">
+   <md-card-title-group>
+      <img md-card-lg-image [attr.src]="listing.pic">
+      <md-card-title>${{listing.rent}} - {{listing.bed}} bed / {{listing.bath}} bath</md-card-title>
+      <md-card-subtitle>{{listing.address}}</md-card-subtitle>
+   </md-card-title-group>
+   <md-card-actions>
+      <button md-raised-button color="primary" (click)="goToListing(listing)">view listing</button>
+      <button md-raised-button color="warn" *ngIf="listing.lat">map</button>
+   </md-card-actions>
+</md-card>

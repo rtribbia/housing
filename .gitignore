@@ -4,3 +4,5 @@ output.json
 public/template.html
 .apikey
 .sites
+public/app/*.js
+public/app/*.js.map
