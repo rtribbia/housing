@@ -1,5 +1,6 @@
+<div *ngIf="listings.length">
 <sebm-google-map [latitude]="lat" [longitude]="lng" [zoom]="11">
-  <sebm-google-map-marker *ngFor="let listing of listings | rent:minRentFilter:maxRentFilter:addressFilter" [latitude]="listing.lat" [longitude]="listing.long" [label]="listing.rent.toString()" >
+  <sebm-google-map-marker *ngFor="let listing of listings | rent:minRentFilter:maxRentFilter:addressFilter" [latitude]="listing.lat" [longitude]="listing.long" [label]="listing.rent.toString()">
        <sebm-google-map-info-window [disableAutoPan]="true">
             <div class="info-window">
                <div class="info-div-left">
@@ -43,3 +44,4 @@
       <button md-raised-button color="warn" *ngIf="listing.lat">map</button>
    </md-card-actions>
 </md-card>
+</div>

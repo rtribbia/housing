@@ -22,7 +22,7 @@ import { RentPipe } from './rent.pipe';
 @NgModule({
   imports: [
     AgmCoreModule.forRoot({
-      apiKey: "AIzaSyBAhqhV92y805_riwBj3eqRBaVjTK3vwAU"
+      apiKey: ""
     }),
     BrowserModule,
     MdCardModule,

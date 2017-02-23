@@ -3,8 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { ListingsComponent }      from './listings.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/listings', pathMatch: 'full' },
-  { path: 'listings',     component: ListingsComponent }
+  { path: '', component: ListingsComponent }
 ];
 @NgModule({
   imports: [ RouterModule.forRoot(routes) ],

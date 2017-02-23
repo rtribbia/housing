@@ -17,12 +17,7 @@ import { Pipe } from '@angular/core';
 export class ListingsComponent implements OnInit {
   lat: number = 45.5275364;
   lng: number = -122.6707299;
-  listings= [
-  {pic:["sdfsdf"],
-    rent: 5000,
-   title: "sdgsdf",
-   address: "sdf"}
-  ];
+  listings: Listing[] = [];
   selectedListing: Listing;
   minRentFilter:number = 0;
   maxRentFilter:number = 5000;

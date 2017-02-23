@@ -15,4 +15,5 @@ export class Listing {
 	mapId: number;
 	lat: number;
 	long: number;
+	visible: boolean;
 }
