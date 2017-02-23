@@ -3,7 +3,6 @@ import { Router }            from '@angular/router';
 import { Listing }                from './listing';
 import { ListingService }         from './listing.service';
 import { RentPipe } from './rent.pipe';
-import mapGlobals = require('./globals');
 import { Pipe } from '@angular/core';
 
 
