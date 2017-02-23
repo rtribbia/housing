@@ -6,3 +6,4 @@ public/template.html
 .sites
 public/app/*.js
 public/app/*.js.map
+.DS_Store
