@@ -12,12 +12,12 @@ var appfolio = {
 //main scrape method
 appfolio.scrape = function(siteArray) {
 
-		siteArray.forEach(function(app,i) {
-			var url = 'https://' + app + '.appfolio.com/listings/listings';
-		    appfolio.urls.push(url);
-		});
+	siteArray.forEach(function(app,i) {
+		var url = 'https://' + app + '.appfolio.com/listings/listings';
+	    appfolio.urls.push(url);
+	});
 
-		appfolio.urls.forEach(scrapeURL);
+	appfolio.urls.forEach(scrapeURL);
 
 }
 
