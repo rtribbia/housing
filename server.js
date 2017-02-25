@@ -7,7 +7,7 @@ var scraper = require('./src/scrape/taskrunner.js');
 
 scraper.start({
 	appfolio: true,
-	cap: false,
+	cap: true,
 	craigslist: true,
 	princeton: false
 });

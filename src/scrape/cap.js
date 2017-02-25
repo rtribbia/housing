@@ -4,7 +4,8 @@ var cheerio = require('cheerio');
 var cap = {
 	results: [],
 	urls: [],
-	outstandingRequests: 0
+	outstandingRequests: 0,
+  taskRunner: null
 }
 
 
@@ -17,6 +18,7 @@ function scrapeURL(listing,i) {
 		}
 		if (cap.outstandingRequests == 0) {
 			console.log(cap.results.length + ' Capital Property Mgmt listings found.');
+      cap.taskRunner.setComplete('cap');
 		}
 
 	});
@@ -84,7 +86,8 @@ function parseResult(html,listingURL) {
 
 }
 
-cap.scrape = function(url) {
+cap.scrape = function(url, taskRunner) {
+  cap.taskRunner = taskRunner;
 
    request(url, function(error, response, html){
 

@@ -1,7 +1,7 @@
 var appfolio = require('./appfolio.js');
 var craigslist = require('./craigslist.js');
 var cap = require('./cap.js');
-var Princeton = require('./princeton.js');
+var princeton = require('./princeton.js');
 
 var defaultOpts = {
 	appfolio: false,
@@ -15,9 +15,9 @@ var defaultOpts = {
 var appfolioArray = ['rmspdx','manifaust'];
 var craigslistURL = 'https://portland.craigslist.org/search/apa?availabilityMode=0&bedrooms=1&laundry=1&laundry=4&max_price=1380&min_price=800&postal=97212&postedToday=1&search_distance=10';
 var capURL = ('http://www.capmng.com/availability/details.php');
-var princeton = new Princeton('http://www.princetonproperty.com/map_view/');
+var princetonURL = 'http://www.princetonproperty.com/map_view/';
 
-var taskrunner = {
+var taskRunner = {
 	opts: defaultOpts,
 	completeStatus: {
 		appfolio: false,
@@ -27,29 +27,29 @@ var taskrunner = {
 	}
 }
 
-taskrunner.start = function(opts) {
-	taskrunner.opts = opts;
+taskRunner.start = function(opts) {
+	taskRunner.opts = opts;
 
-	if (taskrunner.opts.appfolio) {
-		console.log('taskrunner start appfolio...');
-		appfolio.scrape(appfolioArray, taskrunner);
+	if (taskRunner.opts.appfolio) {
+		console.log('scrape start appfolio...');
+		appfolio.scrape(appfolioArray, taskRunner);
 	}
-	if (taskrunner.opts.craigslist) {
-		console.log('taskrunner start craigslist...');
-		craigslist.scrape(craigslistURL, taskrunner);
+	if (taskRunner.opts.craigslist) {
+		console.log('scrape start craigslist...');
+		craigslist.scrape(craigslistURL, taskRunner);
 	}
-	if (taskrunner.opts.cap) {
-		console.log('taskrunner start capitap property mgmt...');
-		cap.scrape(capURL);
+	if (taskRunner.opts.cap) {
+		console.log('scrape start capitap property mgmt...');
+		cap.scrape(capURL, taskRunner);
 	}
-	if (taskrunner.opts.princeton) {
-		console.log('taskrunner start princeton...');
-		princeton.generateQuery();
+	if (taskRunner.opts.princeton) {
+		console.log('scrape start princeton...');
+		princeton.scrape(princetonURL, taskRunner);
 	}
 }
 
-taskrunner.setComplete = function(site) {
-	taskrunner.completeStatus[site] = true;
+taskRunner.setComplete = function(site) {
+	taskRunner.completeStatus[site] = true;
 	if (allComplete()) {
 		console.log('done!')
 	}
@@ -58,15 +58,15 @@ taskrunner.setComplete = function(site) {
 function allComplete() {
 	var complete = true;
 
-	Object.keys(taskrunner.opts).forEach(function(site) {
-		if (taskrunner.opts[site] != taskrunner.completeStatus[site])
+	Object.keys(taskRunner.opts).forEach(function(site) {
+		if (taskRunner.opts[site] != taskRunner.completeStatus[site])
 			complete = false;
 	});
 
 	return complete;
 }
 
-taskrunner.getResults = function(site) {
+taskRunner.getResults = function(site) {
 	switch(site) {
 		case 'appfolio':
 			return appfolio.getResults();
@@ -86,4 +86,4 @@ taskrunner.getResults = function(site) {
 }
 
 
-module.exports = taskrunner;
+module.exports = taskRunner;

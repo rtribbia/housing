@@ -1,24 +1,29 @@
 var request = require('request');
 var cheerio = require('cheerio');
-var results = [];
 
-var princeton = function(url) {this.url = url; this.results = []; }
+var princeton = {
+	results: [],
+	coords: [],
+	taskRunner: null
+}
 
 
-princeton.prototype.generateQuery = function() {
-   request(this.url, function(error, response, html){
+princeton.scrape = function(URL, taskRunner) {
+   princeton.taskRunner = taskRunner;
+   request(URL, function(error, response, html){
 
    		if (!error) {
    			var $ = cheerio.load(html);
    			var query = 'http://www.princetonproperty.com/ajax/get_all_points/' + $('.q').html();
-   			scrape(query);
+   			scrapeJSON(query);
    		}
    });
 
 }
 
-function scrape(query) {
-
+function scrapeJSON(query) {
+	console.log(query);
+	
 	request(query, function(error, response, html){
 		if (!error) {
 
@@ -58,9 +63,10 @@ function scrape(query) {
 			    	long: parseFloat(res.long)
   			    };
 
-  			    results.push(result);
+  			    princeton.results.push(result);
 			});
-			console.log(results.length + ' Princeton listings found.');
+			console.log(princeton.results.length + ' Princeton listings found.');
+			princeton.taskRunner.setComplete('princeton');
 		}
 	});
 
@@ -68,7 +74,7 @@ function scrape(query) {
 
 
 // //expose results array
-princeton.prototype.getResults = function() {
+princeton.getResults = function() {
 	return results;
 }
 
