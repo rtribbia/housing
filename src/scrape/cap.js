@@ -54,7 +54,7 @@ function parseResult(html,listingURL) {
 
 	
 	
-	var body = "";
+    var body = "";
     var link = listingURL;
     var sqft = "";
     var bedba = "";
@@ -100,7 +100,12 @@ cap.scrape = function(url) {
    				}
    			});
    			
+   			//dev
+   			cap.urls = cap.urls.slice(0,4);
+
+
    			cap.urls.forEach(scrapeURL);
+
    		}
    });
 

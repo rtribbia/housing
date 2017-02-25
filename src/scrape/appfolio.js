@@ -5,13 +5,14 @@ var appfolio = {
 	results: [],
 	urls: [],
 	outstandingRequests: 0,
-	googleMapLocs: []
+	googleMapLocs: [],
+    taskRunner: null
 }
 
 
 //main scrape method
-appfolio.scrape = function(siteArray) {
-
+appfolio.scrape = function(siteArray, taskRunner) {
+    appfolio.taskRunner = taskRunner;
 	siteArray.forEach(function(app,i) {
 		var url = 'https://' + app + '.appfolio.com/listings/listings';
 	    appfolio.urls.push(url);
@@ -67,7 +68,7 @@ function scrapeURL (url,i) {
         if (appfolio.outstandingRequests == 0) {	
        		console.log(appfolio.urls.length + ' Appfolio sites scraped.');
        		console.log(appfolio.results.length + ' Appfolio listings found.');
-       		//return resolve(results.length);
+       		appfolio.taskRunner.setComplete('appfolio');
    		}
 	});
 }

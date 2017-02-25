@@ -1,9 +1,12 @@
 var request = require('request');
 var cheerio = require('cheerio');
 
+var craigslist = {
+	results: [],
+	coords: [],
+	taskRunner: null
+}
 
-var results = [];
-var coords = [];
 
 //requests for both JSON and HTML are async, so these booleans are used to keep track of status.
 var HTMLcomplete = false;
@@ -13,21 +16,17 @@ function log(msg) {
 	console.log(msg);
 }
 
-var craigslist = function(query) {
-	this.query = query; 
-}
-
 function getJSONdata(id) {
 	var json = {lat: 0, long: 0, pic: ""};
 
-	for (var i = 0; i < coords.length; i++) {
+	for (var i = 0; i < craigslist.coords.length; i++) {
 
-		var str = coords[i].PostingID.toString();
+		var str = craigslist.coords[i].PostingID.toString();
 
 		if (str.indexOf(id) > -1) {
-			json.lat = coords[i].Latitude;
-			json.long = coords[i].Longitude;
-			json.pic = coords[i].ImageThumb ? coords[i].ImageThumb : "";
+			json.lat = craigslist.coords[i].Latitude;
+			json.long = craigslist.coords[i].Longitude;
+			json.pic = craigslist.coords[i].ImageThumb ? craigslist.coords[i].ImageThumb : "";
 			break;
 		}
 
@@ -39,9 +38,9 @@ function getJSONdata(id) {
 function pairResults() {
 	//async scrape of HTML and JSON done?
 	if (HTMLcomplete && JSONcomplete)  {
-		log(results.length + ' Craigslist listings found.');
+		
 
-		results.forEach(function(result) {
+		craigslist.results.forEach(function(result) {
 			var id = result.link.split('/')[5].replace('.html','');
 			var json = getJSONdata(id);
 			
@@ -58,6 +57,9 @@ function pairResults() {
 				result.pic = images;
 			}
 		});
+
+		log(craigslist.results.length + ' Craigslist listings found.');
+		craigslist.taskRunner.setComplete('craigslist');
 	}
 }
 
@@ -71,7 +73,7 @@ function scrapeJSON(query,offset) {
 	request(url, function(error, response, body){
 		var parsed = JSON.parse(body);
 		parsed[0].forEach(function(e){
-			coords.push(e);
+			craigslist.coords.push(e);
 		});
 
 		var resultsLen = parsed[0].length;
@@ -132,9 +134,10 @@ function scrapeHTML(query,offset){
 		        	postdate: postdate
 		        };
 
-		        results.push(result);
+		        craigslist.results.push(result);
       		});
 
+      		//results are no clearly paginated -- recursively scrape until end of the line
 			if ((resultsLen > offset) || (!offset) || (resultsLen == offset)) {
 				scrapeHTML(query,resultsLen);
 			} else {
@@ -147,21 +150,21 @@ function scrapeHTML(query,offset){
 }
 
 
-craigslist.prototype.scrape = function() {
-
-	scrapeJSON(this.query);
-	scrapeHTML(this.query);
+craigslist.scrape = function(query, taskRunner) {
+	craigslist.taskRunner = taskRunner;
+	scrapeJSON(query);
+	scrapeHTML(query);
 
 }
 
 //expose HTML array
-craigslist.prototype.getResults = function() {
-	return results;
+craigslist.getResults = function() {
+	return craigslist.results;
 }
 
 //espose JSON array
-craigslist.prototype.getJSON = function() {
-	return coords;
+craigslist.getJSON = function() {
+	return craigslist.coords;
 }
 
 
