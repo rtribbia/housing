@@ -4,13 +4,16 @@ var app  = express();
 var path = require('path');
 var scraper = require('./src/scrape/taskrunner.js');
 
-
-scraper.start({
-	appfolio: true,
-	cap: true,
-	craigslist: true,
-	princeton: false
-});
+if (process.argv[2] == 'scrape') {
+	scraper.start({
+		appfolio: true,
+		cap: true,
+		craigslist: true,
+		princeton: false
+	});
+} else {
+	scraper.readDBfile('db.json');
+}
 
 
 app.use('/', express.static(path.join(__dirname + '/public')));
@@ -30,7 +33,7 @@ app.get('/princeton', function(req, res){
 });
 app.get('/all', function(req, res){
 	//var allResults = appfolio.getResults().concat(craigslist.getResults()).concat(cap.getResults()).concat(princeton.getResults());
-	res.send(['all not ready yet']);
+	res.send(scraper.getResults('all'));
 });
 
 

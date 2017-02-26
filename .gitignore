@@ -7,3 +7,4 @@ public/template.html
 public/app/*.js
 public/app/*.js.map
 .DS_Store
+db.json

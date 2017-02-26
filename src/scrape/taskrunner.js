@@ -1,7 +1,11 @@
+var fs = require('fs');
+
 var appfolio = require('./appfolio.js');
 var craigslist = require('./craigslist.js');
 var cap = require('./cap.js');
 var princeton = require('./princeton.js');
+
+var compiledResults = [];
 
 var defaultOpts = {
 	appfolio: false,
@@ -51,7 +55,13 @@ taskRunner.start = function(opts) {
 taskRunner.setComplete = function(site) {
 	taskRunner.completeStatus[site] = true;
 	if (allComplete()) {
-		console.log('done!')
+		var compiledResults = [];
+
+		Object.keys(taskRunner.opts).forEach(function(csite) {
+			if (taskRunner.opts[csite])
+				compiledResults = compiledResults.concat(taskRunner.getResults(csite));
+		});
+		writeDBfile(compiledResults,'db.json');
 	}
 }
 
@@ -80,10 +90,35 @@ taskRunner.getResults = function(site) {
 		case 'princeton':
 			return princeton.getResults();
 			break;
+		case 'all':
+			return compiledResults;
+			break;
 		default:
 			return ["site not found"];
 	}
 }
+
+taskRunner.readDBfile = function(file) {
+	fs.readFile(file, function (err, data) {
+		if (err) throw err;
+		compiledResults = JSON.parse(data);
+		console.log(file + ' - ' + compiledResults.length + ' results loaded');
+	});
+
+}
+
+function writeDBfile(json,file) {
+
+	fs.writeFile(file,JSON.stringify(json),function(err){
+		if (err) {
+			throw err;
+		} else {
+			console.log(file + ' written.');
+		}
+	});
+
+}
+
 
 
 module.exports = taskRunner;

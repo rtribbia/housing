@@ -75,7 +75,8 @@ function scrapeJSON(query) {
 
 // //expose results array
 princeton.getResults = function() {
-	return results;
+	console.log('returning princeton results');
+	return princeton.results;
 }
 
 
