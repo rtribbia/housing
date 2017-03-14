@@ -103,10 +103,6 @@ cap.scrape = function(url, taskRunner) {
    				}
    			});
    			
-   			//dev
-   			cap.urls = cap.urls.slice(0,4);
-
-
    			cap.urls.forEach(scrapeURL);
 
    		}

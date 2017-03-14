@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "concurrently \"npm run build\" \"npm run serve\"",
     "build": "tsc -p src/frontend/src",
-    "serve": "node server.js"
+    "serve": "node server.js",
+    "scrape": "node server.js scrape"
   },
   "author": "Bob Tribbi",
   "license": "ISC",

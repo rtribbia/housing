@@ -5,8 +5,6 @@ var craigslist = require('./craigslist.js');
 var cap = require('./cap.js');
 var princeton = require('./princeton.js');
 
-var compiledResults = [];
-
 var defaultOpts = {
 	appfolio: false,
 	cap: false,
@@ -15,8 +13,7 @@ var defaultOpts = {
 }
 
 //scrape config
-//var appfolioArray = ['rmspdx','manifaust','fox','ascendpm','interwest','capitalpropertymgmt','rpmpdx','adi','realtysolutions','kbcmgmt','peak','propmhomes','realpronw','garciagrp','firstclassproperty','popm','gordonproperties','circum','profast','holland','sharpproperty','associatedpm','performance','alder','voss','gebhardtpm','mirrorpropertymanagement','dnpm','anchor','bbmgmt','sullivanmgmt','twentythird','milestonepropertymgmt','acornpm','jmre','agrentalmgmt','gridpm','livingroomproperty','regencypropertymgt','carefree'];
-var appfolioArray = ['rmspdx','manifaust'];
+var appfolioArray = ['rmspdx','manifaust','fox','ascendpm','interwest','capitalpropertymgmt','rpmpdx','adi','realtysolutions','kbcmgmt','peak','propmhomes','realpronw','garciagrp','firstclassproperty','popm','gordonproperties','circum','profast','holland','sharpproperty','associatedpm','performance','alder','voss','gebhardtpm','mirrorpropertymanagement','dnpm','anchor','bbmgmt','sullivanmgmt','twentythird','milestonepropertymgmt','acornpm','jmre','agrentalmgmt','gridpm','livingroomproperty','regencypropertymgt','carefree'];
 var craigslistURL = 'https://portland.craigslist.org/search/apa?availabilityMode=0&bedrooms=1&laundry=1&laundry=4&max_price=1380&min_price=800&postal=97212&postedToday=1&search_distance=10';
 var capURL = ('http://www.capmng.com/availability/details.php');
 var princetonURL = 'http://www.princetonproperty.com/map_view/';
@@ -28,7 +25,8 @@ var taskRunner = {
 		cap: false,
 		craislist: false,
 		princeton: false
-	}
+	},
+	compiledResults: []
 }
 
 taskRunner.start = function(opts) {
@@ -55,13 +53,11 @@ taskRunner.start = function(opts) {
 taskRunner.setComplete = function(site) {
 	taskRunner.completeStatus[site] = true;
 	if (allComplete()) {
-		var compiledResults = [];
-
 		Object.keys(taskRunner.opts).forEach(function(csite) {
 			if (taskRunner.opts[csite])
-				compiledResults = compiledResults.concat(taskRunner.getResults(csite));
+				taskRunner.compiledResults = taskRunner.compiledResults.concat(taskRunner.getResults(csite));
 		});
-		writeDBfile(compiledResults,'db.json');
+		writeDBfile(taskRunner.compiledResults,'db.json');
 	}
 }
 
@@ -91,7 +87,7 @@ taskRunner.getResults = function(site) {
 			return princeton.getResults();
 			break;
 		case 'all':
-			return compiledResults;
+			return taskRunner.compiledResults;
 			break;
 		default:
 			return ["site not found"];
@@ -101,8 +97,8 @@ taskRunner.getResults = function(site) {
 taskRunner.readDBfile = function(file) {
 	fs.readFile(file, function (err, data) {
 		if (err) throw err;
-		compiledResults = JSON.parse(data);
-		console.log(file + ' - ' + compiledResults.length + ' results loaded');
+		taskRunner.compiledResults = JSON.parse(data);
+		console.log(file + ' - ' + taskRunner.compiledResults.length + ' results loaded');
 	});
 
 }

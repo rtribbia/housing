@@ -7,7 +7,7 @@ import { Listing } from './listing';
 @Injectable()
 export class ListingService {
 
-  private listingsUrl = '/craigslist';  // URL to web api
+  private listingsUrl = '/all';  // URL to web api
 
   constructor(private http: Http) { }
   getListings(): Promise<Listing[]> {
